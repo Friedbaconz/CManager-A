@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CManager.Application.ConsoleApp\CManager.Application.ConsoleApp.csproj" />
+    <ProjectReference Include="..\CManager.Domain.ConsoleApp\CManager.Domain.ConsoleApp.csproj" />
+    <ProjectReference Include="..\CManager.Infrastructure.ConsoleApp\CManager.Infrastructure.ConsoleApp.csproj" />
+  </ItemGroup>
+
 </Project>

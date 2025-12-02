@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\" />
+    <ProjectReference Include="..\CManager.Application.ConsoleApp\CManager.Application.ConsoleApp.csproj" />
+    <ProjectReference Include="..\CManager.Domain.ConsoleApp\CManager.Domain.ConsoleApp.csproj" />
   </ItemGroup>
 
 </Project>
