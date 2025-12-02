@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="CManager.Application.ConsoleApp/CManager.Application.ConsoleApp.csproj" Id="3517877d-ace2-45b6-b15e-846387d5546a" />
+  <Project Path="CManager.Domain.ConsoleApp/CManager.Domain.ConsoleApp.csproj" Id="7d741361-01fc-410f-88d1-922129055661" />
+  <Project Path="CManager.Infrastructure.ConsoleApp/CManager.Infrastructure.ConsoleApp.csproj" Id="993389be-242e-4c91-a722-378c5ff1be73" />
   <Project Path="CManager.Presentation.ConsoleApp/CManager.Presentation.ConsoleApp.csproj" />
 </Solution>
