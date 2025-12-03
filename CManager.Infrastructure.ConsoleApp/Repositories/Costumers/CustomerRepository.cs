@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using CManager.Application.ConsoleApp.Interface.Costumers;
 using CManager.Domain.ConsoleApp.Models.Costumers;
+using CManager.Domain.ConsoleApp.Interface.Costumers;
+using ProfileInfo = CManager.Domain.ConsoleApp.Models.Costumers.ProfileInfo;
 
 namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 {
@@ -13,7 +14,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
     {
         private readonly string _filePath = filepath;
 
-        public async Task<bool> AddProfileRange(IEnumerable<ProfileInfo> profile)
+        public async Task<bool> AddProfileRangeAsync(IEnumerable<ProfileInfo> profile)
         {
 
             try
@@ -34,7 +35,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<ProfileInfo>> ProfileByAll()
+        public async Task<IEnumerable<ProfileInfo>> ProfileByAllAsync()
         {
             try
             {

@@ -1,8 +1,8 @@
 ﻿namespace CManager.Domain.ConsoleApp.Models.Costumers;
 
-public class AdressInfo
+public class AddressInfo
 {
-    public string streetName { get; set; } = string.Empty;
-    public string postNumbers { get; set; } = string.Empty;
-    public string ort { get; set; } = string.Empty;
+    public string StreetName { get; set; } = string.Empty;
+    public string PostNumbers { get; set; } = string.Empty;
+    public string Ort { get; set; } = string.Empty;
 }

@@ -14,11 +14,10 @@ public class ProfileInfo
 
     public string Email { get; set; } = string.Empty;
 
-    public AdressInfo AdressProfile { get; set; } = new AdressInfo();
+    public AddressInfo AddressProfile { get; set; } = new AddressInfo();
 
 }
 
 public class ProfileCreateRequest : ProfileInfo
 {
-    
 }
