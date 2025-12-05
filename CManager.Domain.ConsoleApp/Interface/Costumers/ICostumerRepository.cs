@@ -10,5 +10,5 @@ public interface ICostumerRepository
     Task<IEnumerable<ProfileInfo>> ProfileByAllAsync();
 
     // Delete 
-    bool DeleteProfileById(string id);
+    Task<bool> DeleteProfileById(string id);
 }
