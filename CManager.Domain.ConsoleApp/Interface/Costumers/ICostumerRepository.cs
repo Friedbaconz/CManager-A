@@ -9,6 +9,9 @@ public interface ICostumerRepository
     // Get
     Task<IEnumerable<ProfileInfo>> ProfileByAllAsync();
 
+    Task<IEnumerable<ProfileInfo>> ProfileByEmailAsync(string id);
+
     // Delete 
     Task<bool> DeleteProfileById(string id);
+
 }

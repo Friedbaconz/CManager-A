@@ -27,7 +27,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 
                     if (jsonstring != null && jsonstring.Length > 0)
                     {
-                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring).ToList();
+                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
                     }
 
                     if (profileList != null)
@@ -66,7 +66,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 
                     if (jsonstring != null && jsonstring.Length > 0)
                     {
-                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring).ToList();
+                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
                     }
 
                     if (profileList != null)
@@ -119,5 +119,52 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
             }
         }
 
+        public async Task<IEnumerable<ProfileInfo>> ProfileByEmailAsync(string id)
+        {
+            try
+            {
+                if (File.Exists(_filePath))
+                {
+                    var profileList = new List<ProfileInfo>();
+                    var jsonstring = await File.ReadAllTextAsync(_filePath);
+
+                    if (jsonstring != null && jsonstring.Length > 0)
+                    {
+                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
+                    }
+
+                    if (profileList != null)
+                    {
+
+                        List<ProfileInfo> transferList = [];
+                        foreach (var person in profileList)
+                        {
+                            if (person.Email == id)
+                            {
+                                transferList.Add(person);
+                            }
+                            else
+                            {
+                            }
+                        }
+                        return transferList;
+
+                    }
+                    else
+                    {
+                        return [];
+                    }
+                }
+                else
+                {
+                    return [];
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return [];
+            }
+        }
     }
 }

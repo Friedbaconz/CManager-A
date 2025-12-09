@@ -50,7 +50,7 @@ public class CostumerService(ICostumerRepository costumerRepository) : ICostumer
             {
                
                 _profileList.Remove(profile);
-                return _costumerRepository.DeleteProfileById(email);
+                await _costumerRepository.DeleteProfileById(email);
 
             }
             return true;
