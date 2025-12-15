@@ -1,78 +1,73 @@
-﻿using CManager.Domain.ConsoleApp.Interface.Costumers;
+﻿using CManager.Application.ConsoleApp.Helpers.Costumers;
+using CManager.Domain.ConsoleApp.Exceptions;
+using CManager.Domain.ConsoleApp.Factory;
+using CManager.Domain.ConsoleApp.Interface.Costumers;
 using CManager.Domain.ConsoleApp.Models.Costumers;
-using CManager.Application.ConsoleApp.Helpers.Costumers;
 using System.Diagnostics;
-using CManager.Infrastructure.ConsoleApp.Repositories.Costumers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using ProfileInfo = CManager.Domain.ConsoleApp.Models.Costumers.ProfileInfo;
 namespace CManager.Application.ConsoleApp.Services.Costumers;
 
 public class CostumerService(ICostumerRepository costumerRepository) : ICostumerService
 {
     
-    
-
     private readonly ICostumerRepository _costumerRepository = costumerRepository;
-    private List <ProfileInfo> _profileList = [];
 
-    public async Task<bool> CreateProfileAsync(string firstName, string lastname, string email, string phonenumber, AddressInfo address)
+
+    public async Task<ProfileResult> CreateProfileAsync(ProfileCreateRequest request)
     {
-        try
-        {
-            var id = IdGenerator.Generate();
+        ArgumentNullException.ThrowIfNull(request);
 
-            var profile = new ProfileInfo
-            {
-                FirstName = firstName,
-                LastName = lastname,
-                Email = email,
-                PhoneNumber = phonenumber,
-                Id = id,
-                AddressProfile = address
-            };
+        ProfileInfo profile = ProfileFactory.Create(request);
+        _profiles.Add(profile);
 
-            _profileList.Add(profile);
-            var result = await _costumerRepository.AddProfileRangeAsync(_profileList);
-            return result;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            return false;
-        }
+        if (await checkProfile(profile.Email))
+            throw new DomainException("Profile Already Exists!");
+        var profileResult = await _costumerRepository.Add(profile);
+        if (!profileResult.Success)
+            return new ProfileResult(false, "Profile was unable to be created");
+
+        return new ProfileResult(false, "Profile was created");
     }
 
     public async Task<bool> DeleteByEmail(string email)
     {
-        try
-        {
-            var profile = _profileList.FirstOrDefault(x => x.Email == email);
-            if (profile != null)
-            {
-               
-                _profileList.Remove(profile);
-                await _costumerRepository.DeleteProfileById(email);
-
-            }
+        var trashprofile = await _costumerRepository.DeleteByEmailAsync(email);
+        if (!trashprofile.Success)
             return true;
-        }
-        catch (Exception ex)
+
+        return false;  
+    }
+
+    public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllProfilesAsync()
+    {
+        var profilelist = await _costumerRepository.GetAllAsync();
+        if (!profilelist.Success)
+            return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "No Members Found", []);
+
+        return new ObjectResult<IEnumerable<ProfileInfo>?> (true, "List gotten", profilelist.Result);
+    }
+
+    public async Task<ObjectResult<ProfileInfo>> GetByEmail(string email)
+    {
+        var profilelist = await _costumerRepository.GetAsync(x => x.Email == email);
+
+        
+        if (!profilelist.Success)
+            return new ObjectResult<ProfileInfo> (false, "No Member Found.", new ProfileInfo());
+        if (profilelist.Result != null)
         {
-            Debug.WriteLine(ex.Message);
-            return false;
+            foreach (var profile in profilelist.Result)
+            {
+                if (profile.Email == email)
+                {
+                    return new ObjectResult<ProfileInfo>(true, "Profile Found", profile);
+                }
+            }
         }
+        return new ObjectResult<ProfileInfo>(true, "No Member Found.", new ProfileInfo());
     }
 
-    public async Task<IReadOnlyList<ProfileInfo>> GetAllProfilesAsync()
-    {
-        _profileList = [.. await _costumerRepository.ProfileByAllAsync()];
-        return _profileList;
-    }
-
-    public async Task<ProfileInfo> GetProfileAsync(string Id)
-    {
-        _profileList = [.. await _costumerRepository.ProfileByAllAsync()];
-
-        var profile = _profileList.FirstOrDefault(x => x.Id == Id);
-        return profile!;
-    }
+    public async Task <bool> checkProfile(string email) => await _costumerRepository.Exists(x => x.Email == email);
+    
 }

@@ -17,7 +17,3 @@ public class ProfileInfo
     public AddressInfo AddressProfile { get; set; } = new AddressInfo();
 
 }
-
-public class ProfileCreateRequest : ProfileInfo
-{
-}

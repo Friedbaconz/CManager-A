@@ -5,13 +5,12 @@ namespace CManager.Domain.ConsoleApp.Interface.Costumers;
 public interface ICostumerService
 {
     // Create
-    Task<bool> CreateProfileAsync(string firstName, string lastname, string email, string phonenumber, AddressInfo address);
+    Task<ProfileResult> CreateProfileAsync(ProfileCreateRequest request);
 
     // Get
-    Task<ProfileInfo> GetProfileAsync(string Id);
-    Task<IReadOnlyList<ProfileInfo>> GetAllProfilesAsync();
+    Task<ObjectResult<ProfileInfo>> GetByEmail(string email);
+    Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllProfilesAsync();
 
     //Delete
     Task<bool> DeleteByEmail(string email);
-
 }
