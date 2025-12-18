@@ -94,20 +94,18 @@ public sealed class CostumerService : ICostumerService
     {
         var profilelist = await _costumerRepository.GetAsync(x => x.Email == email);
 
-        if (!profilelist.Success)
-            return new ObjectResult<ProfileInfo> (false, "No Member Found.", new ProfileInfo());
-
-        if (profilelist.Result != null)
+        if (profilelist?.Result == null)
         {
-            foreach (var profile in profilelist.Result)
-            {
-                if (profile.Email == email)
-                {
-                    return new ObjectResult<ProfileInfo>(true, "Profile Found", profile);
-                }
-            }
+            return new ObjectResult<ProfileInfo>(false, "No Member Found.", new ProfileInfo());
         }
-        return new ObjectResult<ProfileInfo>(true, "No Member Found.", new ProfileInfo());
+
+        foreach (var profile in profilelist.Result)
+        {
+            if (await checkProfile(profile.Email))
+                return new ObjectResult<ProfileInfo>(true, "", profile);
+        }
+
+        return new ObjectResult<ProfileInfo>(false, "No Member Found.", new ProfileInfo());
     }
 
     public async Task <bool> checkProfile(string email) => await _costumerRepository.Exists(x => x.Email == email);

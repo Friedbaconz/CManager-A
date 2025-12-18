@@ -20,30 +20,36 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 
         public async Task<ProfileResult> Add(ProfileInfo profile)
         {
-            var profileList = new List<ProfileInfo>();
-            var jsonstring = await File.ReadAllTextAsync(_filePath);
-
-            if (jsonstring != null && jsonstring.Length > 0)
+            try
             {
-                profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
-            }
-            if (profileList != null)
-            {
+                var profileList = new List<ProfileInfo>();
+                var jsonstring = await File.ReadAllTextAsync(_filePath);
 
-                List<ProfileInfo> transferList = [];
-                foreach (var person in profileList)
+                if (jsonstring != null && jsonstring.Length > 0)
                 {
-                    transferList.Add(person);
+                    profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
                 }
+                if (profileList != null)
+                {
 
-                transferList.AddRange(profile);
-                await File.WriteAllTextAsync(_filePath, string.Empty);
-                var json = JsonSerializer.Serialize(transferList);
-                await File.AppendAllTextAsync(_filePath, json);
-                return new ProfileResult (true, "profile added");
+                    List<ProfileInfo> transferList = [];
+                    foreach (var person in profileList)
+                    {
+                        transferList.Add(person);
+                    }
+
+                    transferList.AddRange(profile);
+                    await File.WriteAllTextAsync(_filePath, string.Empty);
+                    var json = JsonSerializer.Serialize(transferList);
+                    await File.AppendAllTextAsync(_filePath, json);
+                    return new ProfileResult(true, "profile added");
+                }
+                return new ProfileResult(false, "profile couldn't be added");
             }
-
-            return new ProfileResult(false, "profile couldn't be added");
+            catch (Exception ex)
+            {
+                return new ProfileResult(false, ex.Message);
+            }
         }
 
         public async Task<ProfileResult> AddRangeAsync(IEnumerable<ProfileInfo> profile)
@@ -126,7 +132,6 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
                 Debug.WriteLine(ex.Message);
                 return new ProfileResult (false, "Oops something went wrong, tried catching it!");
             }
-
         }
 
         public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllAsync()
@@ -150,40 +155,43 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
             {
                 return new ObjectResult<IEnumerable<ProfileInfo>?>(false, ex.Message, []);
             }
-
-
-
-
-
         }
 
         public async Task<bool> Exists(Func<ProfileInfo, bool> predicate)
         {
-            if (File.Exists(_filePath))
+            try 
             {
-                var profileList = new List<ProfileInfo>();
-                var jsonstring = await File.ReadAllTextAsync(_filePath);
-                if (jsonstring != null && jsonstring.Length > 0)
+                if (File.Exists(_filePath))
                 {
-                    profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
-                }
-                if (profileList != null)
-                {
-                    foreach (var profile in profileList) 
-                    { 
-                        if (predicate(profile))
+                    var profileList = new List<ProfileInfo>();
+                    var jsonstring = await File.ReadAllTextAsync(_filePath);
+                    if (jsonstring != null && jsonstring.Length > 0)
+                    {
+                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
+                    }
+                    if (profileList != null)
+                    {
+                        foreach (var profile in profileList)
                         {
-                            return true;
-                            
+                            if (predicate(profile))
+                            {
+                                return true;
+
+                            }
                         }
+                        return false;
                     }
                     return false;
                 }
                 return false;
             }
-            return false;
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
 
-            
+
         }
 
         public async Task<ObjectResult<IEnumerable<ProfileInfo>>?> GetAsync(Func<ProfileInfo, bool> predicate)
@@ -192,23 +200,24 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
             {
                 if (File.Exists(_filePath))
                 {
+                    var profileList = new List<ProfileInfo>();
                     var jsonstring = await File.ReadAllTextAsync(_filePath);
-
-                    var profile = JsonDataFormatter.Deserialize<IEnumerable<ProfileInfo>>(jsonstring);
-
-                    if (profile != null)
-
-                        foreach (var person in profile)
+                    if (jsonstring != null && jsonstring.Length > 0)
+                    {
+                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
+                    }
+                    if (profileList != null)
+                    {
+                        foreach (var person in profileList)
                         {
-                            if (person.Equals(predicate))
+                            if (predicate(person))
                             {
-                                return new ObjectResult<IEnumerable<ProfileInfo>>(true, "", profile);
+                                return new ObjectResult<IEnumerable<ProfileInfo>>(true, "", profileList);
                             }
                         }
+                    }
                     return new ObjectResult<IEnumerable<ProfileInfo>>(false, "nothing found", []);
-
                 }
-
                 return new ObjectResult<IEnumerable<ProfileInfo>>(false, "No stored list found", []);
             }
             catch (Exception ex)
