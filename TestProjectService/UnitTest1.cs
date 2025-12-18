@@ -1,4 +1,5 @@
 ﻿using CManager.Domain.ConsoleApp.Interface.Costumers;
+using CManager.Application.ConsoleApp.Services.Costumers;
 using CManager.Domain.ConsoleApp.Models.Costumers;
 using NSubstitute;
 using System.Diagnostics;
@@ -25,7 +26,22 @@ public class MemberCreationTestClass
     public void CreateProfile_ShouldReturn_Failed_WhenProfileFailsToBeMade()
     {
         var filePath = Substitute.For<ICostumerRepository>();
-        filePath.Exists()
+        filePath.Exists(Arg.Any<Func<ProfileInfo, bool>>()).Returns(true);
+
+        var profileservice = new CostumerService(filePath);
+
+        var request = new ProfileCreateRequest
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "hans@domain.com",
+            PhoneNumber = "123456789",
+
+        };
+
+        var exception = Assert.Throws<InvalidOperationException>(() => profileservice.CreateProfileAsync(request).GetAwaiter().GetResult());
+
+        Assert.Equal("Profile with this email already exists.", exception.Message);
     }
 
 }

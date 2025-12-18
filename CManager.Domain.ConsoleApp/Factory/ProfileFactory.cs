@@ -27,10 +27,10 @@ public static class ProfileFactory
         var profile = new ProfileInfo
         {
             Id = Guid.NewGuid().ToString(),
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
+            FirstName = request.FirstName.Trim(),
+            LastName = request.LastName.Trim(),
+            Email = request.Email.Trim(),
+            PhoneNumber = request.PhoneNumber?.Trim(),
         };
 
         return profile;

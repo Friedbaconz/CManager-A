@@ -14,6 +14,6 @@ public class ProfileInfo
 
     public string Email { get; set; } = string.Empty;
 
-    public AddressInfo AddressProfile { get; set; } = new AddressInfo();
+    public AddressInfo Address { get; set; } = new AddressInfo();
 
 }

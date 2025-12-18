@@ -131,31 +131,37 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 
         public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllAsync()
         {
-           
-            if (!File.Exists(_filePath));
+            if (!File.Exists(_filePath))
+            {
+
                 var json = await File.ReadAllTextAsync(_filePath);
-                var list = JsonDataFormatter.Deserialize<IEnumerable<ProfileInfo>>(json);
-            if(list != null)
-                return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "List Found", list);
-
-            return new ObjectResult<IEnumerable<ProfileInfo>?> (false, "Couldn't find a list", list );
-
+                var list = JsonDataFormatter.Deserialize<IEnumerable<ProfileInfo>?>(json);
+                if (list != null)
+                    return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "List Found", list);
+                return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a list", []);
+            }
             
-            
+            return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a file", []);
+
+
+
         }
 
         public async Task<bool> Exists(Func<ProfileInfo, bool> predicate)
         {
             if (File.Exists(_filePath))
             {
-                var json = await File.ReadAllTextAsync(_filePath);
-                var jsonstring = JsonDataFormatter.Deserialize<IEnumerable<ProfileInfo>>(json);
-
-                if (jsonstring != null)
+                var profileList = new List<ProfileInfo>();
+                var jsonstring = await File.ReadAllTextAsync(_filePath);
+                if (jsonstring != null && jsonstring.Length > 0)
                 {
-                    foreach (var profile in jsonstring) 
+                    profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
+                }
+                if (profileList != null)
+                {
+                    foreach (var profile in profileList) 
                     { 
-                        if (profile.Equals(predicate))
+                        if (predicate(profile))
                         {
                             return true;
                         }

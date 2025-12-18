@@ -10,8 +10,4 @@
     <ProjectReference Include="..\CManager.Domain.ConsoleApp\CManager.Domain.ConsoleApp.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\" />
-  </ItemGroup>
-
 </Project>
