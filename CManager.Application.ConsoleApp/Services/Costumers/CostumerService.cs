@@ -24,9 +24,9 @@ public sealed class CostumerService : ICostumerService
 
     public void PopulateProfiles()
     {
-        var result = _costumerRepository.GetAllAsync();
-        _profiles = result.Result.Result?.ToList() ?? [];
-        
+        var result = _costumerRepository.GetAllAsync().Result;
+        _profiles = result?.Result?.ToList() ?? [];
+
     }
 
 
@@ -53,7 +53,7 @@ public sealed class CostumerService : ICostumerService
         _profiles.Add(profile);
 
        if (await checkProfile(request.Email))
-            return new ProfileResult(false, "Profile with this email already exists");
+            return new ProfileResult(false, "Profile with this email already exists.");
 
         var profileResult = await _costumerRepository.Add(profile);
 
@@ -74,20 +74,29 @@ public sealed class CostumerService : ICostumerService
 
     public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllProfilesAsync()
     {
+
         var profilelist = await _costumerRepository.GetAllAsync();
         if (!profilelist.Success)
             return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "No Members Found", []);
+        List<ProfileInfo> transferList = [];
+        if (profilelist.Result == null)
+            return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "No Members Found", []);
 
-        return new ObjectResult<IEnumerable<ProfileInfo>?> (true, "List gotten", profilelist.Result);
+        foreach (var profile in profilelist.Result)
+        {
+           transferList.Add(profile);
+        }
+        return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "", transferList);
+
     }
 
     public async Task<ObjectResult<ProfileInfo>> GetByEmail(string email)
     {
         var profilelist = await _costumerRepository.GetAsync(x => x.Email == email);
 
-        
         if (!profilelist.Success)
             return new ObjectResult<ProfileInfo> (false, "No Member Found.", new ProfileInfo());
+
         if (profilelist.Result != null)
         {
             foreach (var profile in profilelist.Result)

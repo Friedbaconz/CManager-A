@@ -21,27 +21,30 @@ public class MemberCreationTestClass
         Assert.Equal(string.Empty, costumer.PhoneNumber);
     }
 
+
     [Fact]
 
     public void CreateProfile_ShouldReturn_Failed_WhenProfileFailsToBeMade()
     {
         var filePath = Substitute.For<ICostumerRepository>();
-        filePath.Exists(Arg.Any<Func<ProfileInfo, bool>>()).Returns(true);
+            filePath.Exists(Arg.Any<Func<ProfileInfo, bool>>()).Returns(true);
+            filePath.Add(Arg.Any<ProfileInfo>()).Returns(new ProfileResult ( false , ""));
 
         var profileservice = new CostumerService(filePath);
 
         var request = new ProfileCreateRequest
         {
-            FirstName = "John",
-            LastName = "Doe",
-            Email = "hans@domain.com",
-            PhoneNumber = "123456789",
+            FirstName = "sis",
+            LastName = "Dod",
+            Email = "dem@domain.com",
+            PhoneNumber = "123324789",
 
         };
 
-        var exception = Assert.Throws<InvalidOperationException>(() => profileservice.CreateProfileAsync(request).GetAwaiter().GetResult());
+        var result = profileservice.CreateProfileAsync(request).GetAwaiter().GetResult();
 
-        Assert.Equal("Profile with this email already exists.", exception.Message);
+        Assert.False(result.Success);
+        Assert.Equal("Profile with this email already exists.", result.Message);
     }
 
 }

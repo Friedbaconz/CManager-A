@@ -131,17 +131,27 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 
         public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllAsync()
         {
-            if (!File.Exists(_filePath))
+            try
             {
-
-                var json = await File.ReadAllTextAsync(_filePath);
-                var list = JsonDataFormatter.Deserialize<IEnumerable<ProfileInfo>?>(json);
-                if (list != null)
-                    return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "List Found", list);
-                return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a list", []);
+                if (File.Exists(_filePath))
+                {
+                    
+                    var jsonstring = await File.ReadAllTextAsync(_filePath);
+                    
+                    var profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring);
+                    
+                    if (profileList != null)
+                        return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "List Found", profileList);
+                    return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a list", []);
+                }
+                return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a file", []);
             }
-            
-            return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a file", []);
+            catch (Exception ex)
+            {
+                return new ObjectResult<IEnumerable<ProfileInfo>?>(false, ex.Message, []);
+            }
+
+
 
 
 
@@ -164,6 +174,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
                         if (predicate(profile))
                         {
                             return true;
+                            
                         }
                     }
                     return false;
@@ -171,6 +182,8 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
                 return false;
             }
             return false;
+
+            
         }
 
         public async Task<ObjectResult<IEnumerable<ProfileInfo>>?> GetAsync(Func<ProfileInfo, bool> predicate)

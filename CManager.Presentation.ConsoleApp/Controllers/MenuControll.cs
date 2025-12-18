@@ -28,6 +28,15 @@ public sealed class MenuControll(ICostumerService costumerService)
 
         _costumerService.CreateProfileAsync(request);
 
+        //showlist
+
+        var profiles = _costumerService.GetAllProfilesAsync().GetAwaiter().GetResult();
+        if(profiles.Result != null)
+        foreach (var profile in profiles.Result)
+        {
+            Console.WriteLine($"ID: {profile.Id}, Name: {profile.FirstName} {profile.LastName}, Email: {profile.Email}, Phone: {profile.PhoneNumber}");
+        }
+
         Console.ReadLine();
     }
 }
