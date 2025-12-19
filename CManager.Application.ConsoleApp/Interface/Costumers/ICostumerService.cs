@@ -9,8 +9,10 @@ public interface ICostumerService
 
     // Get
     Task<ObjectResult<ProfileInfo>> GetByEmail(string email);
-    Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllProfilesAsync();
+    Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllProfiles();
 
     //Delete
     Task<bool> DeleteByEmail(string email);
 }
+
+

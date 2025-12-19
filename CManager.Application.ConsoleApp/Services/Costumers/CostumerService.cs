@@ -65,14 +65,26 @@ public sealed class CostumerService : ICostumerService
 
     public async Task<bool> DeleteByEmail(string email)
     {
-        var trashprofile = await _costumerRepository.DeleteByEmailAsync(email);
-        if (!trashprofile.Success)
-            return true;
+        var profilelist = await _costumerRepository.GetAsync(x => x.Email == email);
+        if(profilelist?.Result == null)
+        {
+            return false;
+        }
+        foreach (var profile in profilelist.Result)
+        {
+            var result = profilelist.Result;
+            if (profile.Email == email)
+            {
+                var deleteResult = await _costumerRepository.DeleteAsync(x => x.Email == email);
+                if (deleteResult.Success)
+                    return true;
+            }
 
+        }
         return false;  
     }
 
-    public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllProfilesAsync()
+    public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllProfiles()
     {
 
         var profilelist = await _costumerRepository.GetAllAsync();
@@ -90,6 +102,7 @@ public sealed class CostumerService : ICostumerService
 
     }
 
+
     public async Task<ObjectResult<ProfileInfo>> GetByEmail(string email)
     {
         var profilelist = await _costumerRepository.GetAsync(x => x.Email == email);
@@ -101,7 +114,8 @@ public sealed class CostumerService : ICostumerService
 
         foreach (var profile in profilelist.Result)
         {
-            if (await checkProfile(profile.Email))
+            var result = profilelist.Result;
+            if (profile.Email == email)
                 return new ObjectResult<ProfileInfo>(true, "", profile);
         }
 

@@ -88,7 +88,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 
         }
 
-        public async Task<ProfileResult> DeleteByEmailAsync(string Email)
+        public async Task<ProfileResult> DeleteAsync(Func<ProfileInfo, bool> predicate)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
                         List<ProfileInfo> transferList = [];
                         foreach (var person in profileList)
                         {
-                            if (person.Id == Email)
+                            if (predicate(person))
                             {
                                 transferList.Remove(person);
                             }
@@ -134,7 +134,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
             }
         }
 
-        public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllAsync()
+        public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAsync(Func<ProfileInfo, bool> predicate)
         {
             try
             {
@@ -173,6 +173,7 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
                     {
                         foreach (var profile in profileList)
                         {
+
                             if (predicate(profile))
                             {
                                 return true;
@@ -193,40 +194,27 @@ namespace CManager.Infrastructure.ConsoleApp.Repositories.Costumers
 
 
         }
-
-        public async Task<ObjectResult<IEnumerable<ProfileInfo>>?> GetAsync(Func<ProfileInfo, bool> predicate)
+        public async Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllAsync()
         {
-            try 
+            try
             {
                 if (File.Exists(_filePath))
                 {
-                    var profileList = new List<ProfileInfo>();
+
                     var jsonstring = await File.ReadAllTextAsync(_filePath);
-                    if (jsonstring != null && jsonstring.Length > 0)
-                    {
-                        profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring)!.ToList();
-                    }
+
+                    var profileList = JsonSerializer.Deserialize<IEnumerable<ProfileInfo>>(jsonstring);
+
                     if (profileList != null)
-                    {
-                        foreach (var person in profileList)
-                        {
-                            if (predicate(person))
-                            {
-                                return new ObjectResult<IEnumerable<ProfileInfo>>(true, "", profileList);
-                            }
-                        }
-                    }
-                    return new ObjectResult<IEnumerable<ProfileInfo>>(false, "nothing found", []);
+                        return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "List Found", profileList);
+                    return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a list", []);
                 }
-                return new ObjectResult<IEnumerable<ProfileInfo>>(false, "No stored list found", []);
+                return new ObjectResult<IEnumerable<ProfileInfo>?>(true, "Couldn't find a file", []);
             }
             catch (Exception ex)
             {
-                return new ObjectResult<IEnumerable<ProfileInfo>>(false, ex.Message, []);
+                return new ObjectResult<IEnumerable<ProfileInfo>?>(false, ex.Message, []);
             }
-                
-            
         }
-
     }
 }

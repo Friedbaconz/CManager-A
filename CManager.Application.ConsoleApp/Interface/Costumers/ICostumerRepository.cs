@@ -9,11 +9,12 @@ public interface ICostumerRepository
     Task<ProfileResult> AddRangeAsync(IEnumerable<ProfileInfo> profile);
 
     // Get
+    Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAsync(Func<ProfileInfo, bool> predicate);
     Task<ObjectResult<IEnumerable<ProfileInfo>?>> GetAllAsync();
     Task<bool> Exists(Func<ProfileInfo, bool> predicate);
-    Task<ObjectResult<IEnumerable<ProfileInfo>>?> GetAsync(Func<ProfileInfo, bool> predicate);
 
     // Delete 
-    Task<ProfileResult> DeleteByEmailAsync(string Email);
+    Task<ProfileResult> DeleteAsync(Func<ProfileInfo, bool> predicate);
 
 }
+
