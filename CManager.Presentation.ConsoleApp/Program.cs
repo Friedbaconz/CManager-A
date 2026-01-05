@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder();
 
-builder.Services.AddSingleton<ICostumerRepository>(new CustomerRepository(@"C:\Users\johyou\Desktop\data\costumers.json"));
+builder.Services.AddSingleton<ICostumerRepository>(new CustomerRepository(@"C:\Users\johyou\source\repos\CManager\data\costumers.json"));
 builder.Services.AddSingleton<ICostumerService, CostumerService>();
 builder.Services.AddSingleton<MenuControll>();
 
