@@ -1,8 +1,11 @@
 ﻿using CManager.Application.ConsoleApp.Services.Costumers;
+using CManager.Domain.ConsoleApp.Factory;
 using CManager.Domain.ConsoleApp.Interface.Costumers;
 using CManager.Domain.ConsoleApp.Models.Costumers;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Numerics;
 using System.Text;
 
 namespace CManager.Presentation.ConsoleApp.Controllers;
@@ -22,25 +25,42 @@ public sealed class MenuControll(ICostumerService costumerService)
                 case "1":
                     //create profile
                     bool on = true;
+                    string firstName = string.Empty;
+                    string lastName = string.Empty;
+                    string emails = string.Empty;
+                    string phoneNumber = string.Empty;
                     do
                     {
                         Console.Clear();
-                        Console.WriteLine("Enter First Name:");
-                        string firstName = Console.ReadLine();
+                        if (string.IsNullOrEmpty(firstName))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter First Name:");
+                            firstName = Console.ReadLine();
+                        }
 
-                        Console.Clear();
-                        Console.WriteLine("Enter Last Name:");
-                        string lastName = Console.ReadLine();
+                        if (string.IsNullOrEmpty(lastName))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter Last Name:");
+                            lastName = Console.ReadLine();
+                        }
 
-                        Console.Clear();
-                        Console.WriteLine("Enter Email:");
-                        string emails = Console.ReadLine();
+                        if (string.IsNullOrEmpty(emails))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter Email:");
+                            emails = Console.ReadLine();
+                        }
 
-                        Console.Clear();
-                        Console.WriteLine("Enter PhoneNumber:");
-                        string phoneNumber = Console.ReadLine();
+                        if (string.IsNullOrEmpty(phoneNumber))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter PhoneNumber:");
+                            phoneNumber = Console.ReadLine();
+                        }
 
-                        if (phoneNumber != null || emails != null || firstName != null || lastName != null)
+                        if (!string.IsNullOrEmpty(emails) || !string.IsNullOrEmpty(phoneNumber) || !string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(lastName))
                         {
                             on = false;
                             var request = new ProfileCreateRequest
@@ -57,16 +77,79 @@ public sealed class MenuControll(ICostumerService costumerService)
 
                             };
 
-                            _costumerService.CreateProfileAsync(request);
 
+
+                            var result = _costumerService.CreateProfileAsync(request).GetAwaiter().GetResult();
+                            string reason = result.Message;
+                            if (result.Success)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Profile " + firstName + " creation succeeded.");
+                                Console.WriteLine("Back to menu = empty | make another profile = 2");
+                                string option = Console.ReadLine();
+                                if (option == string.Empty)
+                                {
+                                    on = false;
+                                }
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Profile creation failed.");
+                                Console.WriteLine("Reason is: " + reason);
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Back to menu = empty | renter profile = 2");
+                                on = true;
+                                string option = Console.ReadLine();
+                                if (option == string.Empty)
+                                {
+                                    on = false;
+                                }
+                                if (option == "2")
+                                {
+                                    
+                                    if (reason == "Profile with this email already exists." || result.Message == "Invalid Email")
+                                    {
+                                        request.Email = string.Empty;
+                                        emails = string.Empty;
+                                        
+                                    }
+
+                                    if (reason == "Invalid First Name")
+                                    {
+                                        request.FirstName = string.Empty;
+                                        firstName = string.Empty;
+                                        
+                                    }
+
+                                    if (reason == "Invalid Last Name")
+                                    {
+                                        request.LastName = string.Empty;
+                                        lastName = string.Empty;
+                                        
+                                    }
+
+                                    if (reason == "Invalid PhoneNumber")
+                                    {
+                                        request.PhoneNumber = string.Empty;
+                                        phoneNumber = string.Empty;
+                                        
+                                    }
+                                }
+                            }
                         }
                         else                         
                         {
                             Console.WriteLine("Invalid input. Please try again.");
+                            Console.WriteLine("Back to menu = empty | renter profile = 2");
+                            string option = Console.ReadLine();
+                            if (option == string.Empty)
+                            {
+                                on = false;
+                            }
+
                         }
                     } while (on);
-
-                    Console.WriteLine("Profile Created Successfully!");
 
                     input = string.Empty;
                     break;
