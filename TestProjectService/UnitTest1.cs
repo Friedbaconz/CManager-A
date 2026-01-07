@@ -38,6 +38,12 @@ public class MemberCreationTestClass
             LastName = "Dod",
             Email = "dem@domain.com",
             PhoneNumber = "123324789",
+            Address = new AddressInfo
+            {
+                Ort = "City",
+                PostNumbers = "12345",
+                StreetName = "Main St"
+            }
 
         };
 

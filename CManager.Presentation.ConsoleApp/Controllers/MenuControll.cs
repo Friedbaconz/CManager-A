@@ -23,12 +23,14 @@ public sealed class MenuControll(ICostumerService costumerService)
             switch (input) {
 
                 case "1":
-                    //create profile
                     bool on = true;
                     string firstName = string.Empty;
                     string lastName = string.Empty;
                     string emails = string.Empty;
                     string phoneNumber = string.Empty;
+                    string Ort = string.Empty;
+                    string streetName = string.Empty;
+                    string PostNumbers = string.Empty;
                     do
                     {
                         Console.Clear();
@@ -60,7 +62,28 @@ public sealed class MenuControll(ICostumerService costumerService)
                             phoneNumber = Console.ReadLine();
                         }
 
-                        if (!string.IsNullOrEmpty(emails) || !string.IsNullOrEmpty(phoneNumber) || !string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(lastName))
+                        if(string.IsNullOrEmpty(Ort))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter Ort:");
+                            Ort = Console.ReadLine();
+                        }
+
+                        if (string.IsNullOrEmpty(PostNumbers))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter PostNumber:");
+                            PostNumbers = Console.ReadLine();
+                        }
+
+                        if (string.IsNullOrEmpty(streetName))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter StreetName:");
+                            streetName = Console.ReadLine();
+                        }
+
+                        if (!string.IsNullOrEmpty(emails) || !string.IsNullOrEmpty(phoneNumber) || !string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(lastName) || !string.IsNullOrEmpty(Ort) || !string.IsNullOrEmpty(streetName) || !string.IsNullOrEmpty(PostNumbers))
                         {
                             on = false;
                             var request = new ProfileCreateRequest
@@ -74,6 +97,12 @@ public sealed class MenuControll(ICostumerService costumerService)
 
                                 PhoneNumber = phoneNumber,
 
+                                Address = new AddressInfo
+                                {
+                                    Ort = Ort,
+                                    PostNumbers = PostNumbers,
+                                    StreetName = streetName
+                                }
 
                             };
 
@@ -135,6 +164,27 @@ public sealed class MenuControll(ICostumerService costumerService)
                                         phoneNumber = string.Empty;
                                         
                                     }
+
+                                    if (reason == "Invalid PostNumber")
+                                    {
+                                        request.Address.PostNumbers = string.Empty;
+                                        PostNumbers = string.Empty;
+
+                                    }
+
+                                    if (reason == "Invalid Ort")
+                                    {
+                                        request.Address.Ort = string.Empty;
+                                        Ort = string.Empty;
+
+                                    }
+
+                                    if (reason == "Invalid StreetName")
+                                    {
+                                        request.Address.StreetName = string.Empty;
+                                        streetName = string.Empty;
+
+                                    }
                                 }
                             }
                         }
@@ -156,7 +206,6 @@ public sealed class MenuControll(ICostumerService costumerService)
 
 
             case "2":
-                    //showlist
                     Console.Clear();
                     
                     var profiles = _costumerService.GetAllProfiles().GetAwaiter().GetResult();
@@ -164,7 +213,7 @@ public sealed class MenuControll(ICostumerService costumerService)
                     {
                         foreach (var profile in profiles.Result)
                         {
-                            Console.WriteLine($"ID: {profile.Id}, Name: {profile.FirstName} {profile.LastName}, Email: {profile.Email}, Phone: {profile.PhoneNumber}");
+                            Console.WriteLine($"Name: {profile.FirstName} {profile.LastName}, Email: {profile.Email}");
                         }
                     }
                     Console.WriteLine("Press any key to return to menu...");
@@ -173,7 +222,6 @@ public sealed class MenuControll(ICostumerService costumerService)
                     break;
 
             case "3":
-                    //show single profile by email
                     Console.Clear();
                     Console.WriteLine("Enter Email to search:");
                     string searchEmail = Console.ReadLine();
@@ -181,7 +229,9 @@ public sealed class MenuControll(ICostumerService costumerService)
                     if (singleProfile.Result != null)
                     {
                         var prof = singleProfile.Result;
-                        Console.WriteLine($"Profile Found: {prof.Id}, Name: {prof.FirstName} {prof.LastName}, Email: {prof.Email}, Phone: {prof.PhoneNumber}");
+                        Console.WriteLine($"Profile Found: {prof.FirstName}");
+                        Console.WriteLine($"Id: {prof.Id}, Name: {prof.FirstName} {prof.LastName}, Email: {prof.Email}, Phone: {prof.PhoneNumber}");
+                        Console.WriteLine($"Ort: {prof.Address.Ort}, PostNumber: {prof.Address.PostNumbers}, StreetName: {prof.Address.StreetName}");
                     }
                     else
                     {
@@ -194,7 +244,6 @@ public sealed class MenuControll(ICostumerService costumerService)
 
 
             case "4":
-                    //remove profile
                     Console.Clear();
                     Console.WriteLine("Remove profile by email");
                     string RemoveEmail = Console.ReadLine();

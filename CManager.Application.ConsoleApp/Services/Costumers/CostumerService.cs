@@ -1,5 +1,6 @@
 ﻿using CManager.Application.ConsoleApp.Helpers.Costumers;
 using CManager.Application.ConsoleApp.Validators;
+using CManager.Application.ConsoleApp.Validators.AdressValidators;
 using CManager.Domain.ConsoleApp.Exceptions;
 using CManager.Domain.ConsoleApp.Factory;
 using CManager.Domain.ConsoleApp.Interface.Costumers;
@@ -47,6 +48,15 @@ public sealed class CostumerService : ICostumerService
 
         if (!PhoneValidatorcs.IsValidPhone(request.PhoneNumber))
             return new ProfileResult(false, "Invalid PhoneNumber");
+
+        if (!PostNumbersValidator.IsValidPostNumbers(request.Address.PostNumbers))
+            return new ProfileResult(false, "Invalid PostNumber");
+
+        if (!StreetNameValidator.IsValidStreetName(request.Address.StreetName))
+            return new ProfileResult(false, "Invalid StreetName");
+
+        if (!OrtValidator.IsValidOrt(request.Address.Ort))
+            return new ProfileResult(false, "Invalid Ort");
 
 
         ProfileInfo profile = ProfileFactory.Create(request);
