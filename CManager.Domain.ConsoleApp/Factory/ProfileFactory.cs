@@ -24,6 +24,9 @@ public static class ProfileFactory
         if (string.IsNullOrWhiteSpace(request.Email))
             throw new DomainException($"{nameof(request.Email)} is required.");
 
+        if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+            throw new DomainException($"{nameof(request.PhoneNumber)} is required.");
+
         if (string.IsNullOrWhiteSpace(request.Address.Ort))
             throw new DomainException($"{nameof(request.Address.Ort)} is required.");
 
@@ -40,12 +43,12 @@ public static class ProfileFactory
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),
             Email = request.Email.Trim(),
-            PhoneNumber = request.PhoneNumber?.Trim(),
+            PhoneNumber = request.PhoneNumber.Trim(),
             Address = new AddressInfo
             {
-                Ort = request.Address.Ort?.Trim(),
-                PostNumbers = request.Address.PostNumbers?.Trim(),
-                StreetName = request.Address.StreetName?.Trim()
+                Ort = request.Address.Ort.Trim(),
+                PostNumbers = request.Address.PostNumbers.Trim(),
+                StreetName = request.Address.StreetName.Trim()
             }
         };
 
